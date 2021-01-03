@@ -5,7 +5,7 @@ body{
 
 #app{
     display: grid;
-    grid-auto-rows: minmax(150px, auto);
+    /* grid-auto-rows: minmax(150px, auto); */
     /* grid-template-columns:  */
     height:100vh;
     background: #f23557;
@@ -55,7 +55,7 @@ label{
 
 input{
     display:block;
-    height: 60px;
+    /* height: 60px; */
     width: 320px;
     background:#22b2da;
     color: #f0d43a;
@@ -65,8 +65,8 @@ input{
 }
 
 button{
-    width: 400px;
-    height: 100px;
+    width: 320px;
+    /* height: 100px; */
     background: #3b4a6b;
     color: #f0d43a;
     font-size: 26px;
@@ -79,6 +79,7 @@ h1{
 }
 
 textarea{
+    width: 320px;
     background:#22b2da;
     color: #f0d43a;
     font-size: 20px;

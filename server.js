@@ -8,23 +8,32 @@ const app = express();
 const bodyParser = require('body-parser')
 const cors = require('cors');
 
+const corsOptions = {
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": true,
+    "optionsSuccessStatus": 200
+  };
+
 /* Middleware*/
 //Here we are configuring express to use body-parser as middle-ware.
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 // Cors for cross origin allowance
 app.use(cors());
+app.options('*', cors());
 
 /* Initializing the main project folder */
 app.use(express.static('website'));
 
 /* Create an object to hold data */
-const projectData = {};
+const projectData = [];
 
 /* Innitialize the server */
 const port = 3000;
 
-const server = app.listen(port, () => { console.log(`server running on Localhost port ${port}`) });
+const server = app.listen(port, () => { console.log(`server "Weather Journal App" running on Localhost port ${port}`) });
 
 // API Key for OpenWeatherMap
 const apiKey = '6d683045209ec584e44b473d68e6e375';
@@ -36,5 +45,5 @@ app.get('/all', (req, res) => {
 
 app.post('/add', (req, res) => {
     projectData.push(req.body);
-    res.status(200).send();
+    res.status(200).send({ status: "success" });
 });
