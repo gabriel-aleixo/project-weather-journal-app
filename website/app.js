@@ -11,6 +11,7 @@ let newDate = d.getMonth() + '.' + d.getDate() + '.' + d.getFullYear();
 
 // Define callback function
 const generate = e => {
+    e.preventDefault();
 
     let zipCode = document.querySelector('#zip').value;
     let content = document.querySelector('#feelings').value;
@@ -46,22 +47,52 @@ const updateDom = async () => {
         const data = await allData;
         console.log(data)
         const entryHolder = document.querySelector('#entryHolder');
-        const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour:'numeric', minute:'numeric' };
+        const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
         const dateTimeFormat = new Intl.DateTimeFormat('en-US', dateOptions);
-        data.forEach(entry => {
-            const newEntry = entryHolder.cloneNode(true);
-            const date = new Date(entry.date);
-            newEntry.querySelector('#date').innerHTML = dateTimeFormat.format(date);
-            newEntry.querySelector('#temp').innerHTML = entry.temp;
-            newEntry.querySelector('#content').innerHTML = entry.content;
-            entryHolder.parentElement.appendChild(newEntry);
-            console.log(newEntry)
-        });
+        const mostRecent = data.pop();
+        console.log(mostRecent)
+        const newEntry = entryHolder.cloneNode(true);
+        newEntry.removeAttribute('hidden');
+        const date = new Date(mostRecent.date);
+        const tempK = mostRecent.temp;
+        const tempF = (tempK - 273.15) * 1.8 + 32;
+        newEntry.querySelector('#date').innerHTML = dateTimeFormat.format(date);
+        newEntry.querySelector('#temp').innerHTML = `${Math.round(tempF)}&deg; F`;
+        newEntry.querySelector('#content').innerHTML = mostRecent.content;
+        document.querySelector('#entriesContainer').insertBefore(newEntry, entryHolder.nextSibling)
+        console.log(newEntry)
 
     } catch (error) {
         console.log('error', error);
     }
 };
+
+// Build initial DOM
+const buildDom = async () => {
+    const allData = await getData('/all');
+    try {
+        const data = await allData;
+        data.reverse();
+        const entryHolder = document.querySelector('#entryHolder');
+        const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+        const dateTimeFormat = new Intl.DateTimeFormat('en-US', dateOptions);
+        data.forEach(entry => {
+            const newEntry = entryHolder.cloneNode(true);
+            const date = new Date(entry.date);
+            const tempK = entry.temp;
+            const tempF = (tempK - 273.15) * 1.8 + 32;    
+            newEntry.querySelector('#date').innerHTML = dateTimeFormat.format(date);
+            newEntry.querySelector('#temp').innerHTML = `${Math.round(tempF)}&deg; F`;
+            newEntry.querySelector('#content').innerHTML = entry.content;
+            entryHolder.parentElement.appendChild(newEntry);
+        });
+        entryHolder.setAttribute('hidden', true);
+
+    } catch (error) {
+        console.log('error', error);
+    }
+};
+
 
 // GET data from URL
 const getData = async (URL) => {
@@ -97,3 +128,6 @@ const postData = async (URL = '', DATA = {}) => {
         console.log("error: ", error);
     }
 };
+
+// Call function to build initial DOM when content is lodaded
+document.addEventListener('DOMContentLoaded', buildDom)
