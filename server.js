@@ -28,7 +28,8 @@ app.options('*', cors());
 app.use(express.static('website'));
 
 /* Create an object to hold data */
-const projectData = [];
+const projectData = {};
+projectData.entries = [];
 
 /* Innitialize the server */
 const port = 3000;
@@ -44,6 +45,7 @@ app.get('/all', (req, res) => {
 });
 
 app.post('/add', (req, res) => {
-    projectData.push(req.body);
-    res.status(200).send({ status: "success" });
+
+    projectData.entries.push(req.body);
+    res.send(projectData);
 });

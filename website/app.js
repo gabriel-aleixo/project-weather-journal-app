@@ -20,7 +20,7 @@ const generate = e => {
     console.log(input);
 
 
-    getData(`${baseURL}?zip=${zipCode},${countryCode}&appid=${apiKey}`)
+    getData(`${baseURL}?zip=${zipCode},${countryCode}&appid=${apiKey}&units=imperial`)
         .then(data => {
             console.log('API data', data);
             let temp = data.main.temp;
@@ -44,7 +44,7 @@ document.querySelector('#generate').addEventListener('click', generate);
 const updateDom = async () => {
     const allData = await getData('/all');
     try {
-        const data = await allData;
+        const data = await allData.entries;
         console.log(data)
         const entryHolder = document.querySelector('#entryHolder');
         const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
@@ -54,10 +54,9 @@ const updateDom = async () => {
         const newEntry = entryHolder.cloneNode(true);
         newEntry.removeAttribute('hidden');
         const date = new Date(mostRecent.date);
-        const tempK = mostRecent.temp;
-        const tempF = (tempK - 273.15) * 1.8 + 32;
+        const temp = mostRecent.temp;
         newEntry.querySelector('#date').innerHTML = dateTimeFormat.format(date);
-        newEntry.querySelector('#temp').innerHTML = `${Math.round(tempF)}&deg; F`;
+        newEntry.querySelector('#temp').innerHTML = `${Math.round(temp)}&deg; F`;
         newEntry.querySelector('#content').innerHTML = mostRecent.content;
         document.querySelector('#entriesContainer').insertBefore(newEntry, entryHolder.nextSibling)
         console.log(newEntry)
@@ -71,7 +70,7 @@ const updateDom = async () => {
 const buildDom = async () => {
     const allData = await getData('/all');
     try {
-        const data = await allData;
+        const data = await allData.entries; 
         data.reverse();
         const entryHolder = document.querySelector('#entryHolder');
         const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
@@ -79,10 +78,9 @@ const buildDom = async () => {
         data.forEach(entry => {
             const newEntry = entryHolder.cloneNode(true);
             const date = new Date(entry.date);
-            const tempK = entry.temp;
-            const tempF = (tempK - 273.15) * 1.8 + 32;    
+            const temp = entry.temp;
             newEntry.querySelector('#date').innerHTML = dateTimeFormat.format(date);
-            newEntry.querySelector('#temp').innerHTML = `${Math.round(tempF)}&deg; F`;
+            newEntry.querySelector('#temp').innerHTML = `${Math.round(temp)}&deg; F`;
             newEntry.querySelector('#content').innerHTML = entry.content;
             entryHolder.parentElement.appendChild(newEntry);
         });
